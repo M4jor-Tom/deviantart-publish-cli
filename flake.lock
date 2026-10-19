@@ -24,11 +24,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1792325144,
-        "narHash": "sha256-UHnEDzBS/A8w9dDXb2y5SePEB8D7u6sWmMI4Xr2IAp8=",
+        "lastModified": 1792428654,
+        "narHash": "sha256-Z/uF9bazpm6F+P/cvrWA5wUjiuUUjANHOVFK+IDPRy8=",
         "owner": "M4jor-Tom",
         "repo": "replay_right",
-        "rev": "936002b61a3cc17f89e671fd1a115ce1ed24d39a",
+        "rev": "41fdb8e9573b4733e42a5bf290a60ac274ec82e8",
         "type": "github"
       },
       "original": {

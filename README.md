@@ -13,7 +13,7 @@ nix run . -- --browser firefox work < request.json
 nix run . -- --check-steps
 ```
 
-Publishing is headed by default. `--headless` is explicit. Without `--browser`, replay_right's jailed Firefox uses `<state-dir>/profile`; the default state dir is `.deviantart-publish` under the caller's current directory. A named Firefox profile is an explicit, unjailed replay_right override. The browser app also accepts `--state-dir DIR` or replay_right's `--browser firefox NAME`. Never test with a personal profile.
+Publishing is headed by default. `--headless` is explicit. Without `--browser`, replay_right's jailed Firefox uses `<state-dir>/profile`; the default state dir is `.deviantart-publish` under the caller's current directory. A named Firefox profile is an explicit, unjailed replay_right override, resolved by the host Firefox's native `-P` selection rather than application-specific registry scanning. The browser app also accepts `--state-dir DIR` or replay_right's `--browser firefox NAME`. Never test with a personal profile.
 
 ## NDJSON contract
 
