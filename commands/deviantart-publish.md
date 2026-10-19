@@ -4,7 +4,7 @@ description: Schedule validated artwork on DeviantArt with the standalone publis
 
 # DeviantArt publish
 
-Use `deviantart-publish-cli` for normal execution. This command is the human-readable source of intent mirrored by `task.ts`; never automate credentials or bypass a challenge.
+Use `deviantart-publish-cli` for normal execution. This command is the human-readable source of intent mirrored by `publish.ts` (called by `task.ts`); never automate credentials or bypass a challenge.
 
 ### Steps
 

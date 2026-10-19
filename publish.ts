@@ -78,11 +78,14 @@ async function chooseSchedule(page: Page, job: PreparedJob): Promise<void> {
   await page.locator('#schedule-draft-date-picker [role="button"]').click();
   const monthName = new Intl.DateTimeFormat('en-US', { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1)));
   const dayLabel = `${monthName} ${day}, ${year}`;
+  const date = page.getByRole('button', {
+    name: new RegExp(`${monthName} ${day}(?:st|nd|rd|th)?,?\\s+${year}\\b`),
+  }).first();
+  // ponytail: 24 month hops, matching the existing two-year scheduling ceiling.
   for (let attempt = 0; attempt < 24; attempt++) {
-    if (await page.locator(`button[aria-label*="${dayLabel}"]`).count()) break;
+    if (await date.count()) break;
     await page.locator('button[aria-label="Go to the Next Month"]').click();
   }
-  const date = page.locator(`button[aria-label*="${dayLabel}"]`).first();
   if (!await date.count()) throw new Error(`schedule date ${dayLabel} is outside the 24-month picker window`);
   await date.click();
   await page.selectOption('#schedule-draft-time-picker', String(hour));
@@ -135,7 +138,7 @@ export async function submitJob(
   }
   // step 10: Set the subscription tiers <job.tiers>
   if (job.tiers?.length) {
-    const combo = page.getByText('Submit to your subscribers', { exact: false }).locator('xpath=following::*[@role="combobox"][1]');
+    const combo = page.getByText(/submit to your subscribers/i).locator('xpath=following::*[@role="combobox"][1]');
     await combo.scrollIntoViewIfNeeded();
     for (const tier of job.tiers) await pickInCombo(page, combo, tier);
   }
@@ -153,7 +156,7 @@ export async function submitJob(
   await beforeFinalClick();
   await page.getByText('Schedule', { exact: true }).last().click();
   await success.waitFor({ state: 'visible', timeout: 15_000 });
-  const link = success.locator('a[href]').first();
+  const link = success.locator('a[href*="/deviation/"], a[href*="/art/"]').first();
   const href = await link.count() ? await link.getAttribute('href') : null;
   return href ? new URL(href, page.url()).href : null;
 }

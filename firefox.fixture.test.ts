@@ -20,7 +20,7 @@ const html = `<!doctype html><html><body>
 <div>Gallery</div><div role="combobox" id="galleries">Featured</div><button onclick="galleries.textContent += ' Landscapes'">Landscapes</button>
 <button aria-haspopup="menu">menu</button><div role="menuitem" aria-label="Schedule">Schedule</div>
 <div id="schedule-draft-date-picker"><button role="button">date</button></div>
-<button aria-label="January 15, 2027">15</button><button aria-label="Go to the Next Month">next</button>
+<button aria-label="Friday, January 15th, 2027">15</button><button aria-label="Go to the Next Month">next</button>
 <select id="schedule-draft-time-picker">${Array.from({ length: 24 }, (_, hour) => `<option value="${hour}">${hour}</option>`).join('')}</select>
 <button>Confirm Schedule</button><button id="final">Schedule</button>
 <div data-testid="scheduled-success" hidden>Scheduled successfully</div>
@@ -33,7 +33,7 @@ document.querySelector('#final').addEventListener('click', () => { if (!window.f
 </script></body></html>`;
 
 test('disposable Firefox exercises upload, options, schedule, and receipt outcomes', {
-  timeout: 45_000,
+  timeout: 60_000,
   skip: !process.env.PLAYWRIGHT_FIREFOX && 'run inside `nix develop` with PLAYWRIGHT_FIREFOX',
 }, async () => {
   const { firefox } = await import('playwright-core');
@@ -77,6 +77,13 @@ test('disposable Firefox exercises upload, options, schedule, and receipt outcom
       upload: 'art.png', tags: ['one', 'two'], title: 'Fixture title', description: 'Fixture description',
       mature: true, ai: true, price: '5', tier: 'Gold', gallery: 'Featured Landscapes', hour: '9',
     });
+
+    const minimal = { ...job, id: 'minimal', price: undefined, tiers: undefined, galleries: undefined };
+    await submitJob(page, minimal, async () => {});
+    assert.equal(await page.getByLabel('Sell as Premium Download').isChecked(), false);
+    assert.equal(await page.locator('input[name="downloadDollarPrice"]').inputValue(), '');
+    assert.equal(await page.locator('#tiers').innerText(), 'Select tiers');
+    assert.equal(await page.locator('#galleries').innerText(), 'Featured');
 
     const uncertain = { ...job, id: 'uncertain', fingerprint: `${job.fingerprint}-uncertain` };
     uncertainMode = true;

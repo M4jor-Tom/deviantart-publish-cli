@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { checkSteps } from './publish.ts';
@@ -37,12 +38,6 @@ function options(argv: string[]): Options {
     else throw new Error(`unknown option: ${arg}`);
   }
   return parsed;
-}
-
-async function readStdin(): Promise<string> {
-  const chunks: Buffer[] = [];
-  for await (const chunk of process.stdin) chunks.push(Buffer.from(chunk));
-  return Buffer.concat(chunks).toString('utf8');
 }
 
 function emit(result: Result): void {
@@ -113,7 +108,7 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
   if (opts.mode === 'help') { console.log(HELP); return 0; }
   if (opts.mode === 'check') return await checkSteps(new URL('./commands/deviantart-publish.md', import.meta.url)) ? 0 : 1;
   try {
-    const raw = await readStdin();
+    const raw = readFileSync(0, 'utf8');
     if (!raw.trim()) throw new Error('stdin request is empty');
     return await publish(await prepareRequest(validateRequest(JSON.parse(raw))), opts);
   } catch (error) {
